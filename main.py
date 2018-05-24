@@ -35,7 +35,7 @@ class Application(tk.Frame) :
     def leftclick(self,event,row,column) :
         if event.widget["text"] == "X" :
             event.widget.config(text="")
-            self.binoxxo.delete_entry(row,column)
+            self.binoxxo.delete_entry(row,column,"X")
         else :
             event.widget.config(text="X")
             self.binoxxo.add_entry(row,column,"X")
@@ -44,7 +44,7 @@ class Application(tk.Frame) :
     def rightclick(self,event,row,column) :
         if event.widget["text"] == "O" :
             event.widget.config(text="")
-            self.binoxxo.delete_entry(row,column)
+            self.binoxxo.delete_entry(row,column,"O")
         else :
             event.widget.config(text="O")
             self.binoxxo.add_entry(row,column,"O")

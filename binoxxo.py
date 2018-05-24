@@ -45,16 +45,30 @@ class Binoxxo :
     
     #operations that should be used after the creation
     #{
-    def delete_entry(self,row,col) :
+    def delete_entry(self,row,col,content) :
         self.matrix[row][col] = 9
+        if content == "X" :
+            self.rows_ones[row].append(1)
+            self.cols_ones[col].append(1)
+        elif content == "O" :
+            self.rows_zero[row].append(0)
+            self.cols_zero[col].append(0)
         
+    #TODO: es kann nicht sien, dass manche felder von anfang an false sind, wenn ich es immer überprüfe. Was passiert bei der Überprüfung? muss ihc das noch abändern?
+    
+    
+    
     def add_entry(self,row,col,content) :
         print("Row:", row)
         print("Col:", col)
         if content == "X" :
             self.matrix[row][col] = 1
+            self.rows_ones[row] = self.rows_ones[row][:-1]
+            self.cols_ones[col] = self.cols_ones[col][:-1]
         elif content == "O" :
             self.matrix[row][col] = 0
+            self.rows_zero[row] = self.rows_zero[row][:-1]
+            self.cols_zero[col]  =self.cols_zero[col][:-1]
         else :
             raise ValueError("the entries should be X or O, nothing else.")
         pprint(self.matrix)
@@ -175,31 +189,31 @@ class Binoxxo :
                         return not three
         return not three
         
-    def rule_four(self) :
-        four = True
-        for _ in range(self.rows) :
-            if len(self.rows_zero[_]) > 0 or len(self.rows_ones[_]) > 0 :
-                four = False
-        for _ in range(self.cols) :
-            if len(self.cols_zero[_]) > 0 or len(self.cols_ones[_]) > 0 :
-                four = False
-        return four
-    
     # def rule_four(self) :
     #     four = True
-    #     count_1 = 0
-    #     count_0 = 0
-    #     for i in range(self.rows) :
-    #         for j in self.matrix[i] :
-    #             if j == 1 :
-    #                 count_1 += 1
-    #             elif j == 0 :
-    #                 count_0 += 1
-    #         if count_0 >= self.rows/2 or count_1 >= self.rows/2 :
+    #     for _ in range(self.rows) :
+    #         if len(self.rows_zero[_]) > 0 or len(self.rows_ones[_]) > 0 :
     #             four = False
-    #         count_0 = 0
-    #         count_1 = 0
+    #     for _ in range(self.cols) :
+    #         if len(self.cols_zero[_]) > 0 or len(self.cols_ones[_]) > 0 :
+    #             four = False
     #     return four
+    
+    def rule_four(self) :
+        four = True
+        count_1 = 0
+        count_0 = 0
+        for i in range(self.rows) :
+            for j in self.matrix[i] :
+                if j == 1 :
+                    count_1 += 1
+                elif j == 0 :
+                    count_0 += 1
+            if count_0 > self.rows/2 or count_1 > self.rows/2 :
+                four = False
+            count_0 = 0
+            count_1 = 0
+        return four
         
     def rule_unique(self) :
         unique = True
@@ -218,6 +232,12 @@ class Binoxxo :
         if self.rule_three() and self.rule_four() and self.rule_unique() :
              return True
         else :
+            if not self.rule_three() :
+                print("THREE")
+            elif not self.rule_four() :
+                print("FOUR")
+            elif not self.rule_unique() :
+                print("UNIQUE")
             return False
          
     
