@@ -8,17 +8,27 @@ Created on Wed Apr  7 14:48:55 2018
 #TODO: written als Klassenvariable setzen
 
 from random import randint
+from pprint import pprint
+
+#do i fill the last row with respect to all other entries in this row
 
 class Binoxxo :
     def __init__(self,rows,cols) :
-        self.matrix = [[9 for i in range(8)] for i in range(8)]
+        try :
+            rows % 2 == 0
+        except ValueError:
+            print("the number of rows and columns must be even.")    
+        
+        half = int(rows/2)
+        
+        self.matrix = [[9 for i in range(rows)] for i in range(cols)]
         self.entries = {}
         self.rows = rows
         self.cols = cols
-        self.rows_zero = [[0 for _ in range(4)] for _ in range(self.rows)]
-        self.rows_ones = [[1 for _ in range(4)] for _ in range(self.rows)]
-        self.cols_zero = [[0 for _ in range(4)] for _ in range(self.cols)]
-        self.cols_ones = [[1 for _ in range(4)] for _ in range(self.cols)]
+        self.rows_zero = [[0 for _ in range(half)] for _ in range(self.rows)]
+        self.rows_ones = [[1 for _ in range(half)] for _ in range(self.rows)]
+        self.cols_zero = [[0 for _ in range(half)] for _ in range(self.cols)]
+        self.cols_ones = [[1 for _ in range(half)] for _ in range(self.cols)]
         
     def set_entry(self,written,row,col,entry) :
         if entry == 1 :
@@ -32,6 +42,23 @@ class Binoxxo :
             self.cols_zero[col] = self.cols_zero[col][:-1]
             written.append(col)
         return    
+    
+    #operations that should be used after the creation
+    #{
+    def delete_entry(self,row,col) :
+        self.matrix[row][col] = 9
+        
+    def add_entry(self,row,col,content) :
+        print("Row:", row)
+        print("Col:", col)
+        if content == "X" :
+            self.matrix[row][col] = 1
+        elif content == "O" :
+            self.matrix[row][col] = 0
+        else :
+            raise ValueError("the entries should be X or O, nothing else.")
+        pprint(self.matrix)
+    #}
     
     # after two same values will be a different one in a column
     def rule1_col(self,row,written) :
@@ -53,7 +80,7 @@ class Binoxxo :
             return
             
     def rule2_col(self,row,written) :
-        if row == 4 :
+        if row == int(self.rows/2) :
             for col in range(self.cols) :
                 if col not in written :
                     if len(self.cols_zero[col]) < 2 :
@@ -81,7 +108,7 @@ class Binoxxo :
             return
         
     def rule2_row(self,row,col,written) :
-        if col == 4 and col not in written :
+        if col == int(self.cols/2) and col not in written :
             if len(self.rows_zero[row]) < 2 :
                 self.set_entry(written,row,col,1)
             elif len(self.rows_ones[row]) < 2 :
@@ -128,7 +155,7 @@ class Binoxxo :
                     self.entries[row,col] = self.matrix[row][col]
             
     def create(self) :
-        for row in range(8) :
+        for row in range(self.rows) :
             self.create_row(row)
         self.set_shown()
         return
@@ -138,11 +165,11 @@ class Binoxxo :
         three = False
         for row in range(self.rows) :
             for col in range(self.cols) :
-                if col > 1 and col < self.cols-1 :
+                if col > 0 and col < self.cols-1 :
                     three = self.matrix[row][col-1] == self.matrix[row][col] == self.matrix[row][col+1]
                     if three :
                         return not three
-                if row > 1 and row < self.rows-1 :
+                if row > 0 and row < self.rows-1 :
                     three = self.matrix[row-1][col] == self.matrix[row][col] == self.matrix[row+1][col]
                     if three : 
                         return not three
@@ -157,6 +184,22 @@ class Binoxxo :
             if len(self.cols_zero[_]) > 0 or len(self.cols_ones[_]) > 0 :
                 four = False
         return four
+    
+    # def rule_four(self) :
+    #     four = True
+    #     count_1 = 0
+    #     count_0 = 0
+    #     for i in range(self.rows) :
+    #         for j in self.matrix[i] :
+    #             if j == 1 :
+    #                 count_1 += 1
+    #             elif j == 0 :
+    #                 count_0 += 1
+    #         if count_0 >= self.rows/2 or count_1 >= self.rows/2 :
+    #             four = False
+    #         count_0 = 0
+    #         count_1 = 0
+    #     return four
         
     def rule_unique(self) :
         unique = True
