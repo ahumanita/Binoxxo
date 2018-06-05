@@ -8,6 +8,7 @@ Created on Tue Apr  3 09:59:43 2018
 import tkinter as tk
 import binoxxo as bi
 from copy import deepcopy
+from pprint import pprint
 
 class Application(tk.Frame) :
     def __init__(self,rows,columns,master=None) :
@@ -24,6 +25,7 @@ class Application(tk.Frame) :
         self.binoxxo = 0
         self.create_binoxxo()
         self.create_buttons()
+        self.d = {}
         #self.basic_matrix = deepcopy(binoxxo.matrix)
         
     def create_grid(self) :        
@@ -50,11 +52,38 @@ class Application(tk.Frame) :
             self.binoxxo.add_entry(row,column,"O")
         print("right")
 
+    # def create_binoxxo(self) :
+    #     d = {}
+    #     it = 0
+    #     valid = False
+    #     while not valid and it < 100 :
+    #         self.binoxxo = bi.Binoxxo(self.rows,self.cols)
+    #        matrix self.binoxxo.create()
+    #         valid = self.binoxxo.is_valid()
+    #         it += 1
+    #         print(valid)
+    #         print(it)        
+    #     for r in range(0,self.rows) :
+    #         for c in range(0,self.cols) :
+    #             if (r,c) in self.binoxxo.entries.keys() :
+    #                 entry = ""
+    #                 if self.binoxxo.entries[(r,c)] == 0 :
+    #                     entry = "O"
+    #                 elif self.binoxxo.entries[(r,c)] == 1:
+    #                     entry = "X"
+    #                 d["e%d%d" %(r,c)] = tk.Label(width=3,height=1,text=entry).grid(row=r,column=c)
+    #             else :
+    #                 d["d%d%d" %(r,c)] = tk.StringVar()
+    #                 d["e%d%d" %(r,c)] = tk.Label(width=2,bg="white")
+    #                 d["e%d%d" %(r,c)].grid(row=r,column=c)
+    #                 d["e%d%d" %(r,c)].bind("<Button-1>",lambda event, r=r, c=c:self.leftclick(event,r,c))
+    #                 d["e%d%d" %(r,c)].bind("<Button-3>",lambda event, r=r, c=c:self.rightclick(event,r,c))    
+    
     def create_binoxxo(self) :
-        d = {}
+        self.d = {}
         it = 0
         valid = False
-        while not valid and it < 100 :
+        while not valid and it < 1000 :
             self.binoxxo = bi.Binoxxo(self.rows,self.cols)
             self.binoxxo.create()
             valid = self.binoxxo.is_valid()
@@ -63,32 +92,55 @@ class Application(tk.Frame) :
             print(it)        
         for r in range(0,self.rows) :
             for c in range(0,self.cols) :
-                if (r,c) in self.binoxxo.entries.keys() :
-                    entry = ""
-                    if self.binoxxo.entries[(r,c)] == 0 :
-                        entry = "O"
-                    elif self.binoxxo.entries[(r,c)] == 1:
-                        entry = "X"
-                    d["e%d%d" %(r,c)] = tk.Label(width=3,height=1,text=entry).grid(row=r,column=c)
+                entry = ""
+                if self.binoxxo.matrix[r][c] == 0 :
+                    entry = "O"
+                    self.d["e%d%d" %(r,c)] = tk.Label(width=3,height=1,text=entry)
+                    self.d["e%d%d" %(r,c)].grid(row=r,column=c)
+                elif self.binoxxo.matrix[r][c] == 1 :
+                    entry = "X"
+                    self.d["e%d%d" %(r,c)] = tk.Label(width=3,height=1,text=entry)
+                    self.d["e%d%d" %(r,c)].grid(row=r,column=c)
                 else :
-                    d["d%d%d" %(r,c)] = tk.StringVar()
-                    d["e%d%d" %(r,c)] = tk.Label(width=2,bg="white")
-                    d["e%d%d" %(r,c)].grid(row=r,column=c)
-                    d["e%d%d" %(r,c)].bind("<Button-1>",lambda event, r=r, c=c:self.leftclick(event,r,c))
-                    d["e%d%d" %(r,c)].bind("<Button-3>",lambda event, r=r, c=c:self.rightclick(event,r,c))    
+                    #self.d["d%d%d" %(r,c)] = tk.StringVar()
+                    self.d["e%d%d" %(r,c)] = tk.Label(width=2,bg="white")
+                    self.d["e%d%d" %(r,c)].grid(row=r,column=c)
+                    self.d["e%d%d" %(r,c)].bind("<Button-1>",lambda event, r=r, c=c:self.leftclick(event,r,c))
+                    self.d["e%d%d" %(r,c)].bind("<Button-3>",lambda event, r=r, c=c:self.rightclick(event,r,c))
+                
     
     #TODO: nochmal testen, nachdem die Benutzereinträge gespeichert wurden
     def check(self,checkm) :
+        pprint(self.binoxxo.solution)
         if self.binoxxo.is_valid() == True :
             checkm.set("Correct!")
         else :  
             checkm.set("Wrong!")        
+
+    def reset(self) :
+        print("Reset")
+        print(self.d)
+        for r in range(self.rows) :
+            for c in range(self.cols) :
+                if self.binoxxo.original[r][c] != 9 :
+                    if self.binoxxo.original[r][c] == 0 :
+                        self.d["e%d%d" %(r,c)] = "O"
+                    elif self.binoxxo.original[r][c] == 1 :
+                        self.d["e%d%d" %(r,c)] = "X"
+                    self.binoxxo.matrix[r][c] = deepcopy(self.binoxxo.original[r][c])
+                else :
+                    self.d["e%d%d" %(r,c)] = ""
+                    self.binoxxo.matrix[r][c] = 9
+        pprint(self.binoxxo.matrix)
+        return
 
     def create_buttons(self) :
         checkm = tk.StringVar()
         checkm.set("")
         check = tk.Button(width=3,text="check",bg="green",command=lambda:self.check(checkm)).grid(row=0,column=self.columns)
         message = tk.Label(width=6,textvariable=checkm).grid(row=1,column=self.columns)
+        #print(self.d)
+        tk.Button(width=3,text="Reset",bg="yellow",command=lambda:self.reset()).grid(row=3,column=self.columns)
 
 if __name__ == "__main__" :
     rows = 8

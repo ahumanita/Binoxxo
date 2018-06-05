@@ -9,6 +9,9 @@ Created on Wed Apr  7 14:48:55 2018
 
 from random import randint
 from pprint import pprint
+from copy import deepcopy
+
+import bin_matrix as bm
 
 #do i fill the last row with respect to all other entries in this row
 
@@ -21,7 +24,9 @@ class Binoxxo :
         
         half = int(rows/2)
         
-        self.matrix = [[9 for i in range(rows)] for i in range(cols)]
+        self.matrix = bm.Binoxxo_Matrix(rows,cols,9)
+        self.original = [[9 for i in range(rows)] for i in range(cols)]
+        self.solution = [[9 for i in range(rows)] for i in range(cols)]
         self.entries = {}
         self.rows = rows
         self.cols = cols
@@ -73,6 +78,9 @@ class Binoxxo :
             raise ValueError("the entries should be X or O, nothing else.")
         pprint(self.matrix)
     #}
+    
+    def reload_grid(self) :
+        self.matrix = deepcopy(self.original)
     
     # after two same values will be a different one in a column
     def rule1_col(self,row,written) :
@@ -167,24 +175,42 @@ class Binoxxo :
                 show = randint(0,1)
                 if show :
                     self.entries[row,col] = self.matrix[row][col]
+                else :
+                    self.matrix[row][col] = 9
             
     def create(self) :
         for row in range(self.rows) :
             self.create_row(row)
+        self.solution = deepcopy(self.matrix)
         self.set_shown()
+        self.original = deepcopy(self.matrix)
         return
         
-    #check on valid part
+    # #check on valid part
+    # def rule_three(self) :
+    #     three = False
+    #     for row in range(self.rows) :
+    #         for col in range(self.cols) :
+    #             if col > 0 and col < self.cols-1 :
+    #                 three = self.matrix[row][col-1] == self.matrix[row][col] == self.matrix[row][col+1]
+    #                 if three :
+    #                     return not three
+    #             if row > 0 and row < self.rows-1 :
+    #                 three = self.matrix[row-1][col] == self.matrix[row][col] == self.matrix[row+1][col]
+    #                 if three : 
+    #                     return not three
+    #     return not three
+        #check on valid part
     def rule_three(self) :
         three = False
         for row in range(self.rows) :
             for col in range(self.cols) :
                 if col > 0 and col < self.cols-1 :
-                    three = self.matrix[row][col-1] == self.matrix[row][col] == self.matrix[row][col+1]
+                    three = self.original[row][col-1] == self.original[row][col] == self.original[row][col+1]
                     if three :
                         return not three
                 if row > 0 and row < self.rows-1 :
-                    three = self.matrix[row-1][col] == self.matrix[row][col] == self.matrix[row+1][col]
+                    three = self.original[row-1][col] == self.original[row][col] == self.original[row+1][col]
                     if three : 
                         return not three
         return not three
