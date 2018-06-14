@@ -86,18 +86,19 @@ class Application(tk.Frame) :
         while not valid and it < 1000 :
             self.binoxxo = bi.Binoxxo(self.rows,self.cols)
             self.binoxxo.create()
-            valid = self.binoxxo.is_valid()
+            valid = self.binoxxo.binoxxo_is_valid()
             it += 1
             print(valid)
-            print(it)        
+            print(it)   
+        bin_mat = self.binoxxo.matrix.get_matrix()     
         for r in range(0,self.rows) :
             for c in range(0,self.cols) :
                 entry = ""
-                if self.binoxxo.matrix[r][c] == 0 :
+                if bin_mat[r][c] == 0 :
                     entry = "O"
                     self.d["e%d%d" %(r,c)] = tk.Label(width=3,height=1,text=entry)
                     self.d["e%d%d" %(r,c)].grid(row=r,column=c)
-                elif self.binoxxo.matrix[r][c] == 1 :
+                elif bin_mat[r][c] == 1 :
                     entry = "X"
                     self.d["e%d%d" %(r,c)] = tk.Label(width=3,height=1,text=entry)
                     self.d["e%d%d" %(r,c)].grid(row=r,column=c)
@@ -110,9 +111,11 @@ class Application(tk.Frame) :
                 
     
     #TODO: nochmal testen, nachdem die Benutzereinträge gespeichert wurden
+    #TODO: an neue Struktur anpassen!
     def check(self,checkm) :
-        pprint(self.binoxxo.solution)
-        if self.binoxxo.is_valid() == True :
+        pprint(self.binoxxo.solution.get_matrix())
+        # das passt so noch nicht zur neuen struktur!!
+        if self.binoxxo.binoxxo_is_valid() == True :
             checkm.set("Correct!")
         else :  
             checkm.set("Wrong!")        
@@ -120,17 +123,18 @@ class Application(tk.Frame) :
     def reset(self) :
         print("Reset")
         print(self.d)
+        original = self.binoxxo.original.get_matrix()
         for r in range(self.rows) :
             for c in range(self.cols) :
-                if self.binoxxo.original[r][c] != 9 :
-                    if self.binoxxo.original[r][c] == 0 :
+                if original[r][c] != 9 :
+                    if original[r][c] == 0 :
                         self.d["e%d%d" %(r,c)] = "O"
-                    elif self.binoxxo.original[r][c] == 1 :
+                    elif original[r][c] == 1 :
                         self.d["e%d%d" %(r,c)] = "X"
-                    self.binoxxo.matrix[r][c] = deepcopy(self.binoxxo.original[r][c])
+                    self.binoxxo.matrix.set_entry(r,c,deepcopy(original[r][c]))
                 else :
                     self.d["e%d%d" %(r,c)] = ""
-                    self.binoxxo.matrix[r][c] = 9
+                    self.binoxxo.matrix.delete_entry(r,c)
         pprint(self.binoxxo.matrix)
         return
 

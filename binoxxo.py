@@ -25,7 +25,7 @@ class Binoxxo :
         half = int(rows/2)
         
         self.matrix = bm.Binoxxo_Matrix(rows,cols,9)
-        self.original = [[9 for i in range(rows)] for i in range(cols)]
+        self.original = bm.Binoxxo_Matrix(rows,cols,9)
         self.solution = [[9 for i in range(rows)] for i in range(cols)]
         self.entries = {}
         self.rows = rows
@@ -37,12 +37,12 @@ class Binoxxo :
         
     def set_entry(self,written,row,col,entry) :
         if entry == 1 :
-            self.matrix[row][col] = 1
+            self.matrix.set_entry(row,col,1)
             self.rows_ones[row] = self.rows_ones[row][:-1]
             self.cols_ones[col] = self.cols_ones[col][:-1]
             written.append(col)
         if entry == 0 :
-            self.matrix[row][col] = 0
+            self.matrix.set_entry(row,col,0)
             self.rows_zero[row] = self.rows_zero[row][:-1]
             self.cols_zero[col] = self.cols_zero[col][:-1]
             written.append(col)
@@ -51,7 +51,7 @@ class Binoxxo :
     #operations that should be used after the creation
     #{
     def delete_entry(self,row,col,content) :
-        self.matrix[row][col] = 9
+        self.matrix.delete_entry(row,col)
         if content == "X" :
             self.rows_ones[row].append(1)
             self.cols_ones[col].append(1)
@@ -67,16 +67,16 @@ class Binoxxo :
         print("Row:", row)
         print("Col:", col)
         if content == "X" :
-            self.matrix[row][col] = 1
+            self.matrix.set_entry(row,col,1)
             self.rows_ones[row] = self.rows_ones[row][:-1]
             self.cols_ones[col] = self.cols_ones[col][:-1]
         elif content == "O" :
-            self.matrix[row][col] = 0
+            self.matrix.set_entry(row,col,0)
             self.rows_zero[row] = self.rows_zero[row][:-1]
             self.cols_zero[col]  =self.cols_zero[col][:-1]
         else :
             raise ValueError("the entries should be X or O, nothing else.")
-        pprint(self.matrix)
+        pprint(self.matrix.get_matrix())
     #}
     
     def reload_grid(self) :
@@ -84,18 +84,19 @@ class Binoxxo :
     
     # after two same values will be a different one in a column
     def rule1_col(self,row,written) :
+        matrix = self.matrix.get_matrix()
         if row > 1 :
             for col in range(self.cols) :
                 if col not in written :
-                    if self.matrix[row-1][col] == self.matrix[row-2][col] and self.matrix[row-1][col] != 9 :
-                        if self.matrix[row-1][col] == 0 :
+                    if matrix[row-1][col] == matrix[row-2][col] and matrix[row-1][col] != 9 :
+                        if matrix[row-1][col] == 0 :
                             self.set_entry(written,row,col,1)
-                        elif self.matrix[row-1][col] == 1:
+                        elif matrix[row-1][col] == 1:
                             self.set_entry(written,row,col,0)
-                    elif row < self.rows-1 and self.matrix[row-1][col] == self.matrix[row+1][col] and self.matrix[row-1][col] != 9 :
-                        if self.matrix[row-1][col] == 0 :
+                    elif row < self.rows-1 and matrix[row-1][col] == matrix[row+1][col] and matrix[row-1][col] != 9 :
+                        if matrix[row-1][col] == 0 :
                             self.set_entry(written,row,col,1)
-                        elif self.matrix[row-1][col] == 1:
+                        elif matrix[row-1][col] == 1:
                             self.entry(written,row,col,0)
             return
         else :
@@ -114,16 +115,17 @@ class Binoxxo :
             return
             
     def rule1_row(self,row,col,written) :
+        matrix = self.matrix.get_matrix()
         if col > 1 :
-            if self.matrix[row][col-1] == self.matrix[row][col-2] and self.matrix[row][col-1] != 9 :
-                if self.matrix[row][col-1] == 0 :
+            if matrix[row][col-1] == matrix[row][col-2] and matrix[row][col-1] != 9 :
+                if matrix[row][col-1] == 0 :
                     self.set_entry(written,row,col,1)
-                elif self.matrix[row][col-1] == 1:
+                elif matrix[row][col-1] == 1:
                     self.set_entry(written,row,col,0)
-            elif col < self.cols-1 and self.matrix[row][col-1] == self.matrix[row][col+1] and self.matrix[row][col-1] != 9 :
-                if self.matrix[row][col-1] == 0 :
+            elif col < self.cols-1 and matrix[row][col-1] == matrix[row][col+1] and matrix[row][col-1] != 9 :
+                if matrix[row][col-1] == 0 :
                     self.set_entry(written,row,col,1)
-                elif self.matrix[row][col-1] == 1:
+                elif matrix[row][col-1] == 1:
                     self.set_entry(written,row,col,0)
             return
         else :
@@ -174,9 +176,9 @@ class Binoxxo :
             for col in range(self.cols) :
                 show = randint(0,1)
                 if show :
-                    self.entries[row,col] = self.matrix[row][col]
+                    self.entries[row,col] = self.matrix.get_entry(row,col)
                 else :
-                    self.matrix[row][col] = 9
+                    self.matrix.set_entry(row,col,9)
             
     def create(self) :
         for row in range(self.rows) :
@@ -254,16 +256,7 @@ class Binoxxo :
                     unique = False
         return unique
         
-    def is_valid(self) :
-        if self.rule_three() and self.rule_four() and self.rule_unique() :
-             return True
-        else :
-            if not self.rule_three() :
-                print("THREE")
-            elif not self.rule_four() :
-                print("FOUR")
-            elif not self.rule_unique() :
-                print("UNIQUE")
-            return False
+    def binoxxo_is_valid(self) :
+        return self.solution.is_valid()
          
     
