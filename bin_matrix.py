@@ -6,6 +6,7 @@ Created on Wed Jun  5 14:05:43 2018
 """
 
 from copy import deepcopy
+from pprint import pprint
 
 class Binoxxo_Matrix :
     def __init__(self,rows,cols,init_value) :
@@ -38,7 +39,7 @@ class Binoxxo_Matrix :
     def transpose(self) :
         matrix = deepcopy(self.matrix)
         for i in range(self.rows) :
-            for j in range(self.cols) :
+            for j in range(i) :
                 if i != j :
                     tmp = matrix[i][j]
                     matrix[i][j] = matrix[j][i]
@@ -46,14 +47,15 @@ class Binoxxo_Matrix :
         return matrix
         
     ### RULES
+    # dont count 9s as they are only placeholders
     def has_not_three_in_a_rowcol(self) :
         for row in range(self.rows) :
             for col in range(self.cols) :
                 if col > 0 and col < self.cols-1 :
-                    if (self.matrix[row][col-1] == self.matrix[row][col] == self.matrix[row][col+1]) :# and self.matrix[row][col] != 9
+                    if (self.matrix[row][col-1] == self.matrix[row][col] == self.matrix[row][col+1])  and self.matrix[row][col] != 9 :
                         return False
                 if row > 0 and row < self.rows-1 :
-                    if (self.matrix[row-1][col] == self.matrix[row][col] == self.matrix[row+1][col]) :# and self.matrix[row][col] != 9
+                    if (self.matrix[row-1][col] == self.matrix[row][col] == self.matrix[row+1][col]) and self.matrix[row][col] != 9 :
                         return False
         return True
         
@@ -74,12 +76,17 @@ class Binoxxo_Matrix :
     def has_unique_rowcol(self) :
         for row in range(self.rows) :
             for _ in range(row+1,self.rows) :
+                # cant check on uniqueness if two entries are missing
+                if self.matrix[row].count(9) >= 2 :
+                    continue
                 if self.matrix[row] == self.matrix[_] :
                     return False
-        #transpose = [list(x) for x in zip(*self.matrix)]
+                    
         trans = self.transpose()
         for col in range(self.cols) :
             for _ in range(col+1,self.cols) :
+                if trans[col].count(9) >= 2 :
+                    continue
                 if trans[col] == trans[_] :
                     return False
         return True

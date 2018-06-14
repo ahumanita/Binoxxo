@@ -1,0 +1,6 @@
+Undo-Button: remember all actions of the user and undo the last one if clicked (STACK)
+Solution-Button: Show the solution right of the buttons
+Fancystyle: make the buttons look nicer and arrange the grid nicer
+Color-Button (R,Blue,Black): change the color for setting new entries -> if unsure the user can use a different color than black
+Resize: Resize the grid if the window is rescaled
+Dummy: add dummy object for the row between binoxxo and buttons
