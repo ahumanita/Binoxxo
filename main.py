@@ -23,9 +23,11 @@ class Application(tk.Frame) :
         self.cellwidth = 10
         self.cellheight = 10
         self.binoxxo = 0
+        self.d = {}
+        self.texts = {}
         self.create_binoxxo()
         self.create_buttons()
-        self.d = {}
+        
         #self.basic_matrix = deepcopy(binoxxo.matrix)
         
     def create_grid(self) :        
@@ -35,20 +37,20 @@ class Application(tk.Frame) :
                 d["e%d%d" %(r,c)] = tk.Entry(width=2).grid(row=r,column=c)
             
     def leftclick(self,event,row,column) :
-        if event.widget["text"] == "X" :
-            event.widget.config(text="")
+        if self.texts["e%d%d" %(row,column)].get() == "X" :
+            self.texts["e%d%d" %(row,column)].set("")
             self.binoxxo.delete_entry(row,column,"X")
         else :
-            event.widget.config(text="X")
+            self.texts["e%d%d" %(row,column)].set("X")
             self.binoxxo.add_entry(row,column,"X")
         print("left")
        
     def rightclick(self,event,row,column) :
-        if event.widget["text"] == "O" :
-            event.widget.config(text="")
+        if self.texts["e%d%d" %(row,column)].get() == "O" :
+            self.texts["e%d%d" %(row,column)].set("")
             self.binoxxo.delete_entry(row,column,"O")
         else :
-            event.widget.config(text="O")
+            self.texts["e%d%d" %(row,column)].set("O")
             self.binoxxo.add_entry(row,column,"O")
         print("right")
 
@@ -96,15 +98,23 @@ class Application(tk.Frame) :
                 entry = ""
                 if bin_mat[r][c] == 0 :
                     entry = "O"
-                    self.d["e%d%d" %(r,c)] = tk.Label(width=3,height=1,text=entry)
+                    ltext = tk.StringVar()
+                    self.texts["e%d%d" %(r,c)] = ltext
+                    self.d["e%d%d" %(r,c)] = tk.Label(width=3,height=1,textvariable=ltext)
+                    ltext.set(entry)
                     self.d["e%d%d" %(r,c)].grid(row=r,column=c)
                 elif bin_mat[r][c] == 1 :
                     entry = "X"
-                    self.d["e%d%d" %(r,c)] = tk.Label(width=3,height=1,text=entry)
+                    ltext = tk.StringVar()
+                    self.texts["e%d%d" %(r,c)] = ltext
+                    self.d["e%d%d" %(r,c)] = tk.Label(width=3,height=1,textvariable=ltext)
+                    ltext.set(entry)
                     self.d["e%d%d" %(r,c)].grid(row=r,column=c)
                 else :
-                    #self.d["d%d%d" %(r,c)] = tk.StringVar()
-                    self.d["e%d%d" %(r,c)] = tk.Label(width=2,bg="white")
+                    ltext = tk.StringVar()
+                    self.texts["e%d%d" %(r,c)] = ltext
+                    self.d["e%d%d" %(r,c)] = tk.Label(width=2,bg="white",textvariable=ltext)
+                    ltext.set("")
                     self.d["e%d%d" %(r,c)].grid(row=r,column=c)
                     self.d["e%d%d" %(r,c)].bind("<Button-1>",lambda event, r=r, c=c:self.leftclick(event,r,c))
                     self.d["e%d%d" %(r,c)].bind("<Button-3>",lambda event, r=r, c=c:self.rightclick(event,r,c))
@@ -122,20 +132,18 @@ class Application(tk.Frame) :
 
     def reset(self) :
         print("Reset")
-        print(self.d)
         original = self.binoxxo.original.get_matrix()
         for r in range(self.rows) :
             for c in range(self.cols) :
                 if original[r][c] != 9 :
                     if original[r][c] == 0 :
-                        self.d["e%d%d" %(r,c)] = "O"
+                        self.texts["e%d%d" %(r,c)].set("O")
                     elif original[r][c] == 1 :
-                        self.d["e%d%d" %(r,c)] = "X"
+                        self.texts["e%d%d" %(r,c)].set("X")
                     self.binoxxo.matrix.set_entry(r,c,deepcopy(original[r][c]))
                 else :
-                    self.d["e%d%d" %(r,c)] = ""
+                    self.texts["e%d%d" %(r,c)].set("")
                     self.binoxxo.matrix.delete_entry(r,c)
-        pprint(self.binoxxo.matrix)
         return
 
     def create_buttons(self) :
