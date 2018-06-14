@@ -34,6 +34,14 @@ class Binoxxo :
         self.rows_ones = [[1 for _ in range(half)] for _ in range(self.rows)]
         self.cols_zero = [[0 for _ in range(half)] for _ in range(self.cols)]
         self.cols_ones = [[1 for _ in range(half)] for _ in range(self.cols)]
+        self.stack = []
+        
+    # save the operations in the stack for undo()
+    # structure is as follows: [row,col,entry]
+    # row and col define the location in the grid
+    # entry is the original entry before changes
+    def op_to_stack(self,row,col,entry) :
+        self.stack.append([row,col,entry])
         
     def set_entry(self,written,row,col,entry) :
         if entry == 1 :
@@ -52,31 +60,31 @@ class Binoxxo :
     #{
     def delete_entry(self,row,col,content) :
         self.matrix.delete_entry(row,col)
+        self.op_to_stack(row,col,content)
         if content == "X" :
             self.rows_ones[row].append(1)
             self.cols_ones[col].append(1)
         elif content == "O" :
             self.rows_zero[row].append(0)
             self.cols_zero[col].append(0)
-        
-    #TODO: es kann nicht sien, dass manche felder von anfang an false sind, wenn ich es immer überprüfe. Was passiert bei der Überprüfung? muss ihc das noch abändern?
     
-    
-    
+    # add_entry is called, if the user fills an empty grid field
+    # set_entry is called, if the program fills a field
     def add_entry(self,row,col,content) :
         print("Row:", row)
         print("Col:", col)
         if content == "X" :
+            self.op_to_stack(row,col,self.matrix.get_entry(row,col))
             self.matrix.set_entry(row,col,1)
             self.rows_ones[row] = self.rows_ones[row][:-1]
             self.cols_ones[col] = self.cols_ones[col][:-1]
         elif content == "O" :
+            self.op_to_stack(row,col,self.matrix.get_entry(row,col))
             self.matrix.set_entry(row,col,0)
             self.rows_zero[row] = self.rows_zero[row][:-1]
             self.cols_zero[col]  =self.cols_zero[col][:-1]
         else :
             raise ValueError("the entries should be X or O, nothing else.")
-        pprint(self.matrix.get_matrix())
     #}
     
     def reload_grid(self) :

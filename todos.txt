@@ -1,4 +1,5 @@
 Undo-Button: remember all actions of the user and undo the last one if clicked (STACK)
+-> unhighlight the button if no operations were made
 Solution-Button: Show the solution right of the buttons
 Fancystyle: make the buttons look nicer and arrange the grid nicer
 Color-Button (R,Blue,Black): change the color for setting new entries -> if unsure the user can use a different color than black
