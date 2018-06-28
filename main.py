@@ -9,13 +9,14 @@ import tkinter as tk
 import binoxxo as bi
 from copy import deepcopy
 from pprint import pprint
+import random
 
 class Application(tk.Frame) :
     def __init__(self,rows,columns,master=None) :
         super().__init__(master)
         
         if rows != columns or rows % 2 != 0 :
-            raise ValueError
+            raise ValueError("Binoxxo must be quadratic!")
         
         self.rows = rows
         self.cols = columns
@@ -25,8 +26,10 @@ class Application(tk.Frame) :
         self.cellheight = 10
         self.binoxxo = 0
         self.d = {}
+        
         self.create_binoxxo()
         self.create_buttons()
+        
             
     def leftclick(self,event,row,column) :
         if self.d["t%d%d" %(row,column)].get() == "X" :
@@ -86,6 +89,27 @@ class Application(tk.Frame) :
         else :  
             checkm.set("Wrong!")        
 
+    def pop_up_reset(self) :
+        popup = tk.Toplevel()
+        popup.wm_title("Binoxxo: Reset Warning")
+        label = tk.Label(popup, text="Do you really want to reset your Binoxxo?")
+        label.pack(side="top", fill="x", pady=10)
+        B1 = tk.Button(popup, text="Yes", bg = "green" , command = lambda: [self.reset(),popup.destroy()])
+        B2 = tk.Button(popup, text="Maybe", bg = "orange", command = lambda: [self.maybe_reset(),popup.destroy()])
+        B3 = tk.Button(popup, text="No", bg = "red", command = popup.destroy)
+        B1.pack()
+        B2.pack()
+        B3.pack()
+
+    # this function resets the binoxxo with a 0.5 chance
+    def maybe_reset(self) :
+        choice = random.randint(0,1)
+        if choice == 1 :
+            print("maybe resetted")
+            self.reset()
+        else :
+            return
+
     def reset(self) :
         print("Reset")
         original = self.binoxxo.original.get_matrix()
@@ -119,8 +143,10 @@ class Application(tk.Frame) :
         checkm.set("")
         check = tk.Button(width=3,text="check",bg="green",command=lambda:self.check(checkm)).grid(row=self.gridrows-1,column=0,columnspan=3)
         message = tk.Label(width=6,textvariable=checkm).grid(row=self.gridrows,column=0,columnspan=3)
-        tk.Button(width=3,text="Reset",bg="yellow",command=lambda:self.reset()).grid(row=self.gridrows-1,column=3,columnspan=3)
-        tk.Button(width=2,text="Undo",bg="lightblue",command=lambda:self.undo()).grid(row=self.gridrows-1,column=6,columnspan=3)
+        #tk.Button(width=3,text="Reset",bg="yellow",command=lambda:self.reset()).grid(row=self.gridrows-1,column=3,columnspan=3)
+        tk.Button(width=3,text="Reset",bg="yellow",command=lambda:self.pop_up_reset()).grid(row=self.gridrows-1,column=3,columnspan=3)
+        
+        tk.Button(state="normal",width=2,text="Undo",bg="lightblue",command=lambda:self.undo()).grid(row=self.gridrows-1,column=6,columnspan=3)
 
 if __name__ == "__main__" :
     rows = 8
