@@ -7,11 +7,11 @@ Created on Wed Apr  7 14:48:55 2018
 
 #TODO: written als Klassenvariable setzen
 
-from random import randint
 from pprint import pprint
 from copy import deepcopy
 
 import bin_matrix as bm
+from helper_functions import *
 
 #do i fill the last row with respect to all other entries in this row
 
@@ -26,7 +26,7 @@ class Binoxxo :
         
         self.matrix = bm.Binoxxo_Matrix(rows,cols,9)
         self.original = bm.Binoxxo_Matrix(rows,cols,9)
-        self.solution = [[9 for i in range(rows)] for i in range(cols)]
+        self.solution = bm.Binoxxo_Matrix(rows,cols,9)
         self.entries = {}
         self.rows = rows
         self.cols = cols
@@ -156,7 +156,7 @@ class Binoxxo :
             elif len(self.rows_ones[row]) == 0  or len(self.cols_ones[col]) == 0 :
                 self.set_entry(written,row,col,0)
             else :
-                e = randint(0,1)
+                e = decision(1/2)
                 if e == 1 :
                     self.set_entry(written,row,col,1)
                 elif e == 0 :
@@ -179,10 +179,10 @@ class Binoxxo :
                 self.fill_rest(row,col,written)
         return
         
-    def set_shown(self)  :    
+    def set_shown(self) :    
         for row in range(self.rows) :
             for col in range(self.cols) :
-                show = randint(0,1)
+                show = decision(5/12)
                 if show :
                     self.entries[row,col] = self.matrix.get_entry(row,col)
                 else :
